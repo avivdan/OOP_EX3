@@ -1,4 +1,5 @@
 from GraphInterface import GraphInterface
+import copy
 
 
 class DiGraph(GraphInterface):
@@ -8,7 +9,8 @@ class DiGraph(GraphInterface):
         self.edge_size = 0
         self.mc_count = 0
         self.graph_v = {}  # dict of all the nodes in the graph (int : NodeData)
-        self.graph_edges = {}  # dict of all the nodes connected from a node (int : {int : EdgeData})
+        self.graph_edges_out = {}  # dict of all the nodes connected from a node (int : {int : EdgeData})
+        self.graph_edges_in = {}  # dict of all the nodes connected to a node (int : {int : EdgeData})
 
     def v_size(self) -> int:
         return len(self.graph_v.keys())
@@ -34,11 +36,8 @@ class DiGraph(GraphInterface):
 
     def all_in_edges_of_node(self, id1: int) -> dict:
         dic_return = {}
-        for x in self.graph_edges.keys():
-            if x != id1:
-                for y in dict(self.graph_edges.get(x)).keys():
-                    if y == id1:  # sorry for long line
-                        dic_return[x] = self.graph_edges[x][y].weight
+        for x in dict(self.graph_edges_in[id1]).keys():
+            dic_return[x] = self.graph_edges_in[id1][x].weight
         return dic_return
         """return a dictionary of all the nodes connected to (into) node_id ,
         each node is represented using a pair (other_node_id, weight)
@@ -46,9 +45,8 @@ class DiGraph(GraphInterface):
 
     def all_out_edges_of_node(self, id1: int) -> dict:
         dic_return = {}
-        for x in dict(self.graph_edges[id1]).keys():
-            # dic_return[x] = EdgeData(dict(self.graph_edges[id1]).get(x)).weight
-            dic_return[x] = self.graph_edges[id1][x].weight
+        for x in dict(self.graph_edges_out[id1]).keys():
+            dic_return[x] = self.graph_edges_out[id1][x].weight
         return dic_return
 
         """return a dictionary of all the nodes connected from node_id , each node is represented using a pair
@@ -66,19 +64,18 @@ class DiGraph(GraphInterface):
 
     def add_edge(self, id1: int, id2: int, weight: float) -> bool:
         edge = EdgeData(id1, id2, weight)
-        # if edge.src in self.graph_edges.keys():
-        #     return False
-        if edge.src in self.graph_edges.keys():
-            if edge.dest in self.graph_edges[edge.src].keys():
+        if edge.src in self.graph_edges_out.keys():
+            if edge.dest in self.graph_edges_out[edge.src].keys():
                 return False
             else:
-                self.graph_edges[edge.src][edge.dest] = edge
-                self.edge_size += 1
-                return True
+                self.graph_edges_out[edge.src][edge.dest] = edge
         else:
-            self.graph_edges[edge.src] = {edge.dest: edge}
-            self.edge_size += 1
-            return True
+            self.graph_edges_out[edge.src] = {edge.dest: edge}
+        if edge.dest in self.graph_edges_in.keys():
+            self.graph_edges_in[edge.dest][edge.src] = edge
+        else:
+            self.graph_edges_in[edge.dest] = {edge.src: edge}
+        return True
         """
         Adds an edge to the graph.
         @param id1: The start node of the edge
@@ -109,6 +106,10 @@ class DiGraph(GraphInterface):
     def remove_node(self, node_id: int) -> bool:
         if node_id in self.graph_v.keys():
             self.graph_v.pop(node_id)
+            if node_id in self.graph_edges_out.keys():
+                dict_in = self.graph_edges_out.pop(node_id)  #dict_in = dict
+                for x in dict_in.keys():
+                    self.graph_edges_in[x].pop(node_id)
             return True
         return False
 
@@ -122,9 +123,10 @@ class DiGraph(GraphInterface):
         raise NotImplementedError
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
-        if node_id1 in self.graph_edges.keys():
-            if node_id2 in dict(self.graph_edges.get(node_id1)).keys():
-                self.graph_edges.get(node_id1).pop(node_id2)
+        if node_id1 in self.graph_edges_out.keys():
+            if node_id2 in self.graph_edges_out[node_id1].keys():
+                self.graph_edges_out.get(node_id1).pop(node_id2)
+                self.graph_edges_in.get(node_id2).pop(node_id1)
                 self.edge_size -= 1
                 return True
         return False
@@ -148,7 +150,6 @@ class NodeData:
         self.info = info
         self.weight = weight
         self.pos = GeoLocation(pos)  # a tuple himself
-
 
     def get_key(self):
         return self.key
@@ -183,7 +184,6 @@ class EdgeData:
         self.weight = weight
         self.info = ""
 
-
     def get_src(self):
         return self.src
 
@@ -212,28 +212,27 @@ class GeoLocation:
         self.y = pos[1]
         self.z = pos[2]
 
+
 if __name__ == '__main__':
     # def check0():
-        """
+    """
         This function tests the naming (main methods of the DiGraph class, as defined in GraphInterface.
         :return:
         """
-        g = DiGraph()  # creates an empty directed graph
-        for n in range(4):
-            g.add_node(n)
-        g.add_edge(0, 1, 1)
-        g.add_edge(1, 0, 1.1)
-        g.add_edge(1, 2, 1.3)
-        g.add_edge(2, 3, 1.1)
-        g.add_edge(1, 3, 1.9)
-        g.remove_edge(1, 3)
-        g.add_edge(1, 3, 10)
-        print(g)  # prints the __repr__ (func output)
-        print(g.get_all_v())  # prints a dict with all the graph's vertices.
-        print(g.all_in_edges_of_node(1))
-        print(g.all_out_edges_of_node(1))
-        # g_algo = GraphAlgo(g)
-        # print(g_algo.shortest_path(0, 3))
-        # g_algo.plot_graph()
-
-
+    g = DiGraph()  # creates an empty directed graph
+    for n in range(4):
+        g.add_node(n)
+    g.add_edge(0, 1, 1)
+    g.add_edge(1, 0, 1.1)
+    g.add_edge(1, 2, 1.3)
+    g.add_edge(2, 3, 1.1)
+    g.add_edge(1, 3, 1.9)
+    g.remove_edge(1, 3)
+    g.add_edge(1, 3, 10)
+    print(g)  # prints the __repr__ (func output)
+    print(g.get_all_v())  # prints a dict with all the graph's vertices.
+    print(g.all_in_edges_of_node(1))
+    print(g.all_out_edges_of_node(1))
+    # g_algo = GraphAlgo(g)
+    # print(g_algo.shortest_path(0, 3))
+    # g_algo.plot_graph()
