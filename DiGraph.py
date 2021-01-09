@@ -224,8 +224,8 @@ class GeoLocation:
 
 
 if __name__ == '__main__':
-    # def check0():
-    """
+    def check0():
+        """
         This function tests the naming (main methods of the DiGraph class, as defined in GraphInterface.
         :return:
         """
@@ -243,13 +243,3 @@ if __name__ == '__main__':
     print(g.get_all_v())  # prints a dict with all the graph's vertices.
     print(g.all_in_edges_of_node(1))
     print(g.all_out_edges_of_node(1))
-    # dic = g.get_all_v()
-    # for x in dic.values():
-    #     print(x.key)
-    # print(dic[1].pos.x)
-
-    # with open('data.txt', 'w') as outfile:
-    #     json.dump(json.dumps(g), outfile)
-    # g_algo = GraphAlgo(g)
-    # print(g_algo.shortest_path(0, 3))
-    # g_algo.plot_graph()
