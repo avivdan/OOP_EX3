@@ -10,9 +10,6 @@ class DiGraph(GraphInterface):
         self.graph_v = {}  # dict of all the nodes in the graph (int : NodeData)
         self.graph_edges = {}  # dict of all the nodes connected from a node (int : {int : EdgeData})
 
-    # def __str__(self):
-    #     return "(" +self.graph_edges + ", " + self.graph_v + ", " + self.mc_count + ", " + self.edge_size + ")"
-
     def v_size(self) -> int:
         return len(self.graph_v.keys())
         """
@@ -41,7 +38,7 @@ class DiGraph(GraphInterface):
             if x != id1:
                 for y in dict(self.graph_edges.get(x)).keys():
                     if y == id1:  # sorry for long line
-                        dic_return[x] = self.graph_edges[x][y]
+                        dic_return[x] = self.graph_edges[x][y].weight
         return dic_return
         """return a dictionary of all the nodes connected to (into) node_id ,
         each node is represented using a pair (other_node_id, weight)
@@ -51,7 +48,7 @@ class DiGraph(GraphInterface):
         dic_return = {}
         for x in dict(self.graph_edges[id1]).keys():
             # dic_return[x] = EdgeData(dict(self.graph_edges[id1]).get(x)).weight
-            dic_return[x] = self.graph_edges[id1][x]
+            dic_return[x] = self.graph_edges[id1][x].weight
         return dic_return
 
         """return a dictionary of all the nodes connected from node_id , each node is represented using a pair
@@ -152,8 +149,6 @@ class NodeData:
         self.weight = weight
         self.pos = GeoLocation(pos)  # a tuple himself
 
-    def __str__(self):
-        return "(" + self.key + ", " + self.pos.__str__() + ", " + self.info + ", " + self.weight+ ", " +self.tag + ")"
 
     def get_key(self):
         return self.key
@@ -188,8 +183,6 @@ class EdgeData:
         self.weight = weight
         self.info = ""
 
-    def __str__(self):
-        return "("+self.src+", " +self.dest+", "+self.weight+", "+self.info+")"
 
     def get_src(self):
         return self.src
@@ -218,8 +211,6 @@ class GeoLocation:
         self.x = pos[0]
         self.y = pos[1]
         self.z = pos[2]
-    def __str__(self):
-        return "("+self.x+", "+self.y+", "+self.z+")"
 
 if __name__ == '__main__':
     # def check0():
