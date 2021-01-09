@@ -1,5 +1,5 @@
 from GraphInterface import GraphInterface
-import copy
+import json
 
 
 class DiGraph(GraphInterface):
@@ -69,8 +69,10 @@ class DiGraph(GraphInterface):
                 return False
             else:
                 self.graph_edges_out[edge.src][edge.dest] = edge
+                self.edge_size += 1
         else:
             self.graph_edges_out[edge.src] = {edge.dest: edge}
+            self.edge_size += 1
         if edge.dest in self.graph_edges_in.keys():
             self.graph_edges_in[edge.dest][edge.src] = edge
         else:
@@ -107,7 +109,7 @@ class DiGraph(GraphInterface):
         if node_id in self.graph_v.keys():
             self.graph_v.pop(node_id)
             if node_id in self.graph_edges_out.keys():
-                dict_in = self.graph_edges_out.pop(node_id)  #dict_in = dict
+                dict_in = self.graph_edges_out.pop(node_id)  # dict_in = dict
                 for x in dict_in.keys():
                     self.graph_edges_in[x].pop(node_id)
             return True
@@ -130,7 +132,6 @@ class DiGraph(GraphInterface):
                 self.edge_size -= 1
                 return True
         return False
-
         """
         Removes an edge from the graph.
         @param node_id1: The start node of the edge
@@ -175,6 +176,12 @@ class NodeData:
     def set_tag(self, tag):
         self.tag = tag
 
+    def get_pos(self):
+        return self.pos
+
+    def set_tag(self, pos):
+        self.pos = pos
+
 
 class EdgeData:
 
@@ -212,6 +219,10 @@ class GeoLocation:
         self.y = pos[1]
         self.z = pos[2]
 
+    def get_pos(self):
+        tup = (self.x, self.y, self.z)
+        return tup
+
 
 if __name__ == '__main__':
     # def check0():
@@ -233,6 +244,13 @@ if __name__ == '__main__':
     print(g.get_all_v())  # prints a dict with all the graph's vertices.
     print(g.all_in_edges_of_node(1))
     print(g.all_out_edges_of_node(1))
+    # dic = g.get_all_v()
+    # for x in dic.values():
+    #     print(x.key)
+    # print(dic[1].pos.x)
+
+    # with open('data.txt', 'w') as outfile:
+    #     json.dump(json.dumps(g), outfile)
     # g_algo = GraphAlgo(g)
     # print(g_algo.shortest_path(0, 3))
     # g_algo.plot_graph()
