@@ -1,5 +1,4 @@
 from GraphInterface import GraphInterface
-import json
 
 
 class DiGraph(GraphInterface):
