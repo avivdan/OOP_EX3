@@ -4,8 +4,6 @@ from typing import List
 import json
 from GraphInterface import GraphInterface
 from DiGraph import DiGraph
-from queue import PriorityQueue
-
 
 class GraphAlgoInterface:
     """This abstract class represents an interface of a graph."""
@@ -31,10 +29,10 @@ class GraphAlgoInterface:
             with open("wow.txt") as file:
                 s = json.load(file)
             for node in s["Nodes"]:
-                if "node_position" in node:
-                    self.graph.add_node(node["node_id"], node["node_position"])
+                if "pos" in node:
+                    self.graph.add_node(node["node_id"], )
                 else:
-                    self.graph.add_node(node["node_id"])
+                    self.graph.add_node(node["node_id"], )
             for edge in s["Edges"]:
                 self.graph.add_edge(edge["src"], edge["dest"], edge["w"])
             return True
