@@ -4,7 +4,6 @@ from typing import List
 import json
 from GraphInterface import GraphInterface
 from DiGraph import DiGraph
-from queue import PriorityQueue
 
 
 class GraphAlgoInterface:
@@ -14,27 +13,27 @@ class GraphAlgoInterface:
         self.graph = DiGraph()
 
     def get_graph(self) -> GraphInterface:
-        return self.graph
         """
         :return: the directed graph on which the algorithm works on.
         """
+        return self.graph
 
     # *************************************************************************************
     def load_from_json(self, file_name: str) -> bool:
-
         """
         Loads a graph from a json file.
         @param file_name: The path to the json file
         @returns True if the loading was successful, False o.w.
         """
         try:
-            with open("wow.txt") as file:
+            with open(file_name) as file:
                 s = json.load(file)
+
             for node in s["Nodes"]:
-                if "node_position" in node:
-                    self.graph.add_node(node["node_id"], node["node_position"])
+                if "pos" in node:
+                    self.graph.add_node(node_id=node["node_id"], pos=node["pos"])
                 else:
-                    self.graph.add_node(node["node_id"])
+                    self.graph.add_node(node_id=node["node_id"])
             for edge in s["Edges"]:
                 self.graph.add_edge(edge["src"], edge["dest"], edge["w"])
             return True
@@ -43,7 +42,7 @@ class GraphAlgoInterface:
             return False
         finally:
             file.close()
-        raise NotImplementedError
+        # raise NotImplementedError
 
     def save_to_json(self, file_name: str) -> bool:
         """
@@ -76,7 +75,7 @@ class GraphAlgoInterface:
                 return False
             finally:
                 file.close()
-        raise NotImplementedError
+        # raise NotImplementedError
 
     # *************************************************************************************
 
@@ -135,7 +134,7 @@ class GraphAlgoInterface:
         li_return.reverse()
         return self.graph.get_all_v()[id2].tag, li_return
 
-        raise NotImplementedError
+        # raise NotImplementedError
 
     # ******************************************************************************************************
 
@@ -151,7 +150,7 @@ class GraphAlgoInterface:
         set_in = self.bfs_in(id1)
         set_out = self.bfs_out(id1)
         return list(set_in & set_out)
-        raise NotImplementedError
+        # raise NotImplementedError
 
     def connected_components(self) -> List[list]:
         """
@@ -169,7 +168,7 @@ class GraphAlgoInterface:
                 visited.extend(SCC_set)
                 list_return.append(SCC_set)
         return list_return
-        raise NotImplementedError
+        # raise NotImplementedError
 
     def bfs_out(self, node_id: int) -> List:
         visited = {}
