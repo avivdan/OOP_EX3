@@ -31,7 +31,10 @@ class GraphAlgoInterface:
             with open("wow.txt") as file:
                 s = json.load(file)
             for node in s["Nodes"]:
-                self.graph.add_node(node["node_id"], node["node_position"])
+                if "node_position" in node:
+                    self.graph.add_node(node["node_id"], node["node_position"])
+                else:
+                    self.graph.add_node(node["node_id"])
             for edge in s["Edges"]:
                 self.graph.add_edge(edge["src"], edge["dest"], edge["w"])
             return True
@@ -51,14 +54,17 @@ class GraphAlgoInterface:
         with open(file_name, 'w') as file:
             try:
                 d = {"Nodes": [], "Edges": []}
-                for node_id in self.graph.get_all_v().keys():
-                    d["Nodes"].append({"node_id": node_id,
-                                       "pos": (
-                                           self.get_all_v()[node_id].pos.x,
-                                           self.get_all_v()[node_id].pos.y,
-                                           self.get_all_v()[node_id].pos.z
-                                       )
-                                       })
+                for node in self.graph.get_all_v().values():
+                    if node.pos is None:
+                        d["Nodes"].append({"node_id": node.key})
+                    else:
+                        d["Nodes"].append({"node_id": node.key,
+                                           "pos": (
+                                               node.pos.x,
+                                               node.pos.y,
+                                               node.pos.z
+                                           )
+                                           })
                 for src in self.graph.graph_edges_out.keys():
                     for dest, weight in self.graph.all_out_edges_of_node(src).items():
                         d["Edges"].append({"src": src, "w": weight, "dest": dest})
@@ -66,7 +72,7 @@ class GraphAlgoInterface:
                 json.dump(d, file)
                 return True
             except Exception as e:
-                print("Error save to Json: " + e.__repr__())
+                print(e)
                 return False
             finally:
                 file.close()
@@ -131,7 +137,7 @@ class GraphAlgoInterface:
 
         raise NotImplementedError
 
-#******************************************************************************************************
+    # ******************************************************************************************************
 
     def connected_component(self, id1: int) -> list:
         """
@@ -142,6 +148,9 @@ class GraphAlgoInterface:
         Notes:
         If the graph is None or id1 is not in the graph, the function should return an empty list []
         """
+        set_in = self.bfs_in(id1)
+        set_out = self.bfs_out(id1)
+        return list(set_in & set_out)
         raise NotImplementedError
 
     def connected_components(self) -> List[list]:
@@ -152,7 +161,61 @@ class GraphAlgoInterface:
         Notes:
         If the graph is None the function should return an empty list []
         """
+        visited = []
+        list_return = []
+        for node in self.graph.get_all_v().keys():
+            if node not in visited:
+                SCC_set = self.connected_component(node)
+                visited.extend(SCC_set)
+                list_return.append(SCC_set)
+        return list_return
         raise NotImplementedError
+
+    def bfs_out(self, node_id: int) -> List:
+        visited = {}
+        for node in self.graph.get_all_v().keys():
+            visited[node] = False
+        queue = []
+        visited[node_id] = True
+        queue.append(node_id)
+
+        while queue:
+            s = queue.pop(0)
+            for i in self.graph.all_out_edges_of_node(s).keys():
+                if not visited[i]:
+                    queue.append(i)
+                    visited[i] = True
+
+        list_return = []
+        for node in visited:
+            if visited[node]:
+                list_return.append(node)
+        list_return.remove(node_id)
+        return list_return
+
+    def bfs_in(self, node_id: int) -> List:
+        visited = {}
+        for node in self.graph.get_all_v().keys():
+            visited[node] = False
+        queue = []
+        visited[node_id] = True
+        queue.append(node_id)
+
+        while queue:
+            s = queue.pop(0)
+            for i in self.graph.all_in_edges_of_node(s).keys():
+                if not visited[i]:
+                    queue.append(i)
+                    visited[i] = True
+
+        list_return = []
+        for node in visited:
+            if visited[node]:
+                list_return.append(node)
+        list_return.remove(node_id)
+        return list_return
+
+    # ******************************************************************************************************
 
     def plot_graph(self) -> None:
         """
