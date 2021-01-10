@@ -1,21 +1,25 @@
+import heapq
+import math
 from typing import List
 import json
 from GraphInterface import GraphInterface
+from DiGraph import DiGraph
+from queue import PriorityQueue
 
 
 class GraphAlgoInterface:
     """This abstract class represents an interface of a graph."""
 
     def __init__(self):
-        self.graph = GraphInterface()
+        self.graph = DiGraph()
 
     def get_graph(self) -> GraphInterface:
         return self.graph
+        """
+        :return: the directed graph on which the algorithm works on.
+        """
 
-    """
-    :return: the directed graph on which the algorithm works on.
-    """
-
+    # *************************************************************************************
     def load_from_json(self, file_name: str) -> bool:
 
         """
@@ -68,6 +72,8 @@ class GraphAlgoInterface:
                 file.close()
         raise NotImplementedError
 
+    # *************************************************************************************
+
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         """
         Returns the shortest path from node id1 to node id2 using Dijkstra's Algorithm
@@ -93,7 +99,39 @@ class GraphAlgoInterface:
         More info:
         https://en.wikipedia.org/wiki/Dijkstra's_algorithm
         """
+        nodes = self.graph.get_all_v()
+        if id1 not in nodes or id2 not in nodes:
+            return None
+        visited = []
+        heap_min = []
+        prev_nodes = dict()
+        for x in self.graph.graph_v.keys():
+            nodes[x].tag = math.inf
+        nodes[id1].tag = 0
+        heapq.heappush(heap_min, (nodes[id1].tag, id1))
+
+        while len(heap_min) > 0:
+            v = heapq.heappop(heap_min)[1]  # get the node with the smallest tag
+            for node_id in self.graph.all_out_edges_of_node(v).keys():  # from neighbors
+                if node_id not in visited:  # check if visited
+                    if node_id in self.graph.all_out_edges_of_node(v).keys():  # not search null
+                        alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[node_id]  # tag + edge weight
+                        if self.graph.get_all_v()[node_id].tag > alt_path:
+                            self.graph.graph_v[node_id].tag = alt_path
+                            prev_nodes[node_id] = v
+                            heapq.heappush(heap_min, (alt_path, node_id))  # add to heap the node id by tag
+        node_key = id2
+        li_return = []
+        while self.graph.get_all_v()[node_key].tag > 0:
+            li_return.append(node_key)
+            node_key = prev_nodes[node_key]
+        li_return.append(node_key)
+        li_return.reverse()
+        return self.graph.get_all_v()[id2].tag, li_return
+
         raise NotImplementedError
+
+#******************************************************************************************************
 
     def connected_component(self, id1: int) -> list:
         """
