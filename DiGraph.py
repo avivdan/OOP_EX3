@@ -269,7 +269,7 @@ if __name__ == '__main__':
 
     g = DiGraph()  # creates an empty directed graph
     for n in range(4):
-        g.add_node(n, )
+        g.add_node(n)
     r = NodeData(pos=(4, 5, 3))
     g.add_edge(0, 1, 1)
     g.add_edge(1, 2, 1.3)
