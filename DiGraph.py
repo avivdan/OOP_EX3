@@ -228,10 +228,13 @@ class DiGraph(GraphInterface):
 class NodeData:
     counter = 0
 
-    def __init__(self, info: str = "", weight: float = 0.0, pos=None, tag: float = -1):
+    def __init__(self, key: int = counter, info: str = "", weight: float = 0.0, pos=None, tag: float = -1):
         self.tag = tag
-        self.key = NodeData.counter
-        NodeData.counter += 1
+        if key != NodeData.counter:
+            self.key = key
+        else:
+            self.key = NodeData.counter
+            NodeData.counter += 1
         self.info = info
         self.weight = weight
         if pos is not None:
