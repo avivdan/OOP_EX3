@@ -2,7 +2,10 @@ import math
 from typing import List
 
 from GraphInterface import GraphInterface
+from components import *
 import heapq
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class DiGraph(GraphInterface):
@@ -14,6 +17,9 @@ class DiGraph(GraphInterface):
         self.graph_v = dict()  # dict of all the nodes in the graph (int : NodeData)
         self.graph_edges_out = dict()  # dict of all the nodes connected from a node (int : {int : EdgeData})
         self.graph_edges_in = dict()  # dict of all the nodes connected to a node (int : {int : EdgeData})
+
+    def get_node(self, node_id):
+        return self.get_all_v()[node_id]
 
     def v_size(self) -> int:
         """
@@ -70,6 +76,58 @@ class DiGraph(GraphInterface):
         return self.mc_count
         # raise NotImplementedError
 
+    # *****************************************************************
+
+    def try_get_along(self, node: NodeData, min_x: int, max_x: int, min_y: int, max_y: int) -> tuple:
+        node_to = []
+        if len(self.all_out_edges_of_node(node.key)) > 0:
+            for node_dest in self.all_out_edges_of_node(node.key).keys():
+                if self.get_node(node_dest).pos is not None:
+                    node_to.append(self.get_node(node_dest))
+                if len(node_to) > 1:
+                    x = (node_to[0].pos.x + node_to[1].pos.x) / 2
+                    y = (node_to[0].pos.y + node_to[1].pos.y) / 2
+                    z = (node_to[0].pos.z + node_to[1].pos.z) / 2
+                    return_tu = (x, y, z)
+                    return return_tu
+        node_from = []
+        if len(self.all_in_edges_of_node(node.key)) > 0:
+            for node_src in self.all_in_edges_of_node(node.key).keys():
+                if self.get_node(node_src).pos is not None:
+                    node_from.append(self.get_node(node_src))
+                if len(node_from) > 1:
+                    x = (node_from[0].pos.x + node_from[1].pos.x) / 2
+                    y = (node_from[0].pos.y + node_from[1].pos.y) / 2
+                    z = (node_from[0].pos.z + node_from[1].pos.z) / 2
+                    return_tu = (x, y, z)
+                    return return_tu
+        if len(node_to) > 0 and len(node_from) > 0:
+            x = (node_to[0].pos.x + node_from[0].pos.x) / 2
+            y = (node_to[0].pos.y + node_from[0].pos.y) / 2
+            z = (node_to[0].pos.z + node_from[0].pos.z) / 2
+            return_tu = (x, y, z)
+            return return_tu
+        if len(node_to) > 0:
+            x = (node_to[0].pos.x + np.random.uniform(min_x, max_x))/2
+            y = (node_to[0].pos.y + np.random.uniform(min_y, max_y))/2
+            z = node_to[0].pos.z
+            return_tu = (x, y, z)
+            return return_tu
+        if len(node_from) > 0:
+            x = (node_from[0].pos.x + np.random.uniform(min_x, max_x))/2
+            y = (node_from[0].pos.y + np.random.uniform(min_y, max_y))/2
+            z = node_from[0].pos.z
+            return_tu = (x, y, z)
+            return return_tu
+        else:
+            x = np.random.uniform(min_x, max_x) / 2
+            y = np.random.uniform(min_y, max_y) / 2
+            z = 0
+            return_tu = (x, y, z)
+            return return_tu
+
+    # ******************************************************************
+
     def add_edge(self, id1: int, id2: int, weight: float) -> bool:
         """
         Adds an edge to the graph.
@@ -106,6 +164,15 @@ class DiGraph(GraphInterface):
         """
         if node_id in self.graph_v.keys():
             return False
+        if node_id is not None:
+            if pos is not None:
+                self.graph_v[node_id] = NodeData(key=node_id, pos=pos)
+                return True
+            self.graph_v[node_id] = NodeData(key=node_id)
+            return True
+        if pos is not None:
+            self.graph_v[node_id] = NodeData(pos=pos)
+            return True
         self.graph_v[node_id] = NodeData()
         return True
         # raise NotImplementedError
@@ -225,40 +292,6 @@ class DiGraph(GraphInterface):
     # *+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
 
 
-class NodeData:
-    counter = 0
-
-    def __init__(self, key: int = counter, info: str = "", weight: float = 0.0, pos=None, tag: float = -1):
-        self.tag = tag
-        if key != NodeData.counter:
-            self.key = key
-        else:
-            self.key = NodeData.counter
-            NodeData.counter += 1
-        self.info = info
-        self.weight = weight
-        if pos is not None:
-            self.pos = GeoLocation(pos)  # a tuple himself
-        else:
-            self.pos = None
-
-
-class EdgeData:
-
-    def __init__(self, src: int, dest: int, weight: float):
-        self.src = src
-        self.dest = dest
-        self.weight = weight
-        self.info = ""
-
-
-class GeoLocation:
-    def __init__(self, pos: tuple = (0, 0, 0)):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.z = pos[2]
-
-
 if __name__ == '__main__':
     def check0():
         """
@@ -279,3 +312,73 @@ if __name__ == '__main__':
     print(g.bfs_in(1))
     print(g.bfs_out(1))
     print(set(g.bfs_in(1)) & set(g.bfs_out(1)))
+    # a = list(g.graph_v.keys())
+    # plt.plot(a, "ro")
+    # for node_id in g.graph_v.keys():
+    #     for i in g.all_out_edges_of_node(node_id):
+    #         plt.arrow()
+    # plt.plot(a, [2, 4, 6, 8], "ro")
+    print(len(g.graph_v.values()))
+    # for node in g.get_all_v().values():
+    #     plt.arrow(node.key, node.key, 1, 2)
+    #     print(node.key)
+    # plt.axis([0, 6, 0, 20])
+    # print("wow")
+    # print
+    fg = DiGraph()
+    fg.add_node(1, (20, 14, 3))
+    fg.add_node(2, (3, 1, 4))
+    fg.add_node(3)
+    fg.add_edge(2, 3, 3)
+    fg.add_edge(3, 1, 4)
+    fg.add_edge(1, 2, 5)
+    a = [[], [], []]
+
+    # asd[0].extend(2)
+    not_placed = 0
+    for node in fg.get_all_v().values():
+        if node.pos is not None:
+            a[0].append(node.pos.x)
+            a[1].append(node.pos.y)
+            a[2].append(node.pos.z)
+        else:
+            not_placed += 1
+    if not_placed == len(fg.get_all_v().values()):
+        min_x = 1
+        min_y = 1
+        max_x = 2
+        max_y = 2
+        for node in fg.get_all_v().values():
+            node.pos = GeoLocation(fg.try_get_along(node, min_x, max_x, min_y, max_y))
+            a[0].append(node.pos.x)
+            a[1].append(node.pos.y)
+            a[2].append(node.pos.z)
+    if not_placed > 0:
+        if not_placed < 2:
+            max_x = max(a[0])
+            max_y = max(a[1])
+        else:
+            max_x = max(a[0]) + 1
+            max_y = max(a[1]) + 1
+        min_x = min(a[0])
+        min_y = min(a[1])
+        for node in fg.get_all_v().values():
+            if node.pos is None:
+                node.pos = GeoLocation(fg.try_get_along(node, min_x, max_x, min_y, max_y))
+                a[0].append(node.pos.x)
+                a[1].append(node.pos.y)
+                a[2].append(node.pos.z)
+    margin_x = (min(a[0]) + max(a[0])) / 3
+    margin_y = (max(a[1]) + min(a[1])) / 3
+    min_x = min(a[0]) - math.fabs(margin_x)
+    min_y = min(a[1]) - math.fabs(margin_y)
+    max_x = max(a[0]) + math.fabs(margin_x)
+    max_y = max(a[1]) + math.fabs(margin_y)
+
+    plt.plot(a[0], a[1], "ro")
+    for node in fg.get_all_v().values():
+        for dest_node_id in fg.all_out_edges_of_node(node.key).keys():
+            dest_node = fg.get_node(dest_node_id)
+            plt.arrow(node.pos.x, node.pos.y, (dest_node.pos.x - node.pos.x), (dest_node.pos.y - node.pos.y))
+    plt.axis([min_x, max_x, min_y, max_y])
+    plt.show()
