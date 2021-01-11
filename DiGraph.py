@@ -19,7 +19,10 @@ class DiGraph(GraphInterface):
         self.graph_edges_in = dict()  # dict of all the nodes connected to a node (int : {int : EdgeData})
 
     def get_node(self, node_id):
-        return self.get_all_v()[node_id]
+        if node_id is not None:
+            return self.get_all_v()[node_id]
+        else:
+            return None
 
     def v_size(self) -> int:
         """
@@ -143,14 +146,14 @@ class DiGraph(GraphInterface):
                 return False
             else:
                 self.graph_edges_out[edge.src][edge.dest] = edge
-                self.edge_size += 1
         else:
             self.graph_edges_out[edge.src] = {edge.dest: edge}
-            self.edge_size += 1
         if edge.dest in self.graph_edges_in.keys():
             self.graph_edges_in[edge.dest][edge.src] = edge
         else:
             self.graph_edges_in[edge.dest] = {edge.src: edge}
+        self.edge_size += 1
+        self.mc_count += 1
         return True
         # raise NotImplementedError
 
@@ -167,13 +170,17 @@ class DiGraph(GraphInterface):
         if node_id is not None:
             if pos is not None:
                 self.graph_v[node_id] = NodeData(key=node_id, pos=pos)
+                self.mc_count += 1
                 return True
             self.graph_v[node_id] = NodeData(key=node_id)
+            self.mc_count += 1
             return True
         if pos is not None:
             self.graph_v[node_id] = NodeData(pos=pos)
+            self.mc_count += 1
             return True
         self.graph_v[node_id] = NodeData()
+        self.mc_count += 1
         return True
         # raise NotImplementedError
 
@@ -186,6 +193,7 @@ class DiGraph(GraphInterface):
         """
         if node_id in self.graph_v.keys():
             self.graph_v.pop(node_id)
+            self.mc_count += 1
             if node_id in self.graph_edges_out.keys():
                 dict_in = self.graph_edges_out.pop(node_id)  # dict_in = dict
                 for x in dict_in.keys():
@@ -207,6 +215,7 @@ class DiGraph(GraphInterface):
                 self.graph_edges_out.get(node_id1).pop(node_id2)
                 self.graph_edges_in.get(node_id2).pop(node_id1)
                 self.edge_size -= 1
+                self.mc_count += 1
                 return True
         return False
         # raise NotImplementedError
