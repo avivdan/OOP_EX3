@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class GraphAlgoInterface:
+class GraphAlgo:
     """This abstract class represents an interface of a graph."""
 
     def __init__(self):

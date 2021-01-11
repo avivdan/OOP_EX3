@@ -22,9 +22,7 @@ if __name__ == '__main__':
     #     if y == 1:
     #         dic2[x] = y
     # print(dic2)
-    if 13 in dic1.get(3):
-        dic1.get(3).pop(13)
-        print(dic1)
+    print(dic1.values())
     # if 3 in dict:
     #     if 13 in dict(13)
     # if 13 in dict(dic1.values()):
