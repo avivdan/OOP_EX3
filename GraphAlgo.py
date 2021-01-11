@@ -4,6 +4,9 @@ from typing import List
 import json
 from GraphInterface import GraphInterface
 from DiGraph import DiGraph
+from components import *
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class GraphAlgoInterface:
@@ -216,6 +219,57 @@ class GraphAlgoInterface:
 
     # ******************************************************************************************************
 
+    def get_node(self, node_id):
+        return self.graph.get_all_v()[node_id]
+
+    def try_get_along(self, node: NodeData, min_x: int, max_x: int, min_y: int, max_y: int) -> tuple:
+        node_to = []
+        if len(self.get_graph().all_out_edges_of_node(node.key)) > 0:
+            for node_dest in self.get_graph().all_out_edges_of_node(node.key).keys():
+                if self.get_node(node_dest).pos is not None:
+                    node_to.append(self.get_node(node_dest))
+                if len(node_to) > 1:
+                    x = (node_to[0].pos.x + node_to[1].pos.x) / 2
+                    y = (node_to[0].pos.y + node_to[1].pos.y) / 2
+                    z = (node_to[0].pos.z + node_to[1].pos.z) / 2
+                    return_tu = (x, y, z)
+                    return return_tu
+        node_from = []
+        if len(self.get_graph().all_in_edges_of_node(node.key)) > 0:
+            for node_src in self.get_graph().all_in_edges_of_node(node.key).keys():
+                if self.get_node(node_src).pos is not None:
+                    node_from.append(self.get_node(node_src))
+                if len(node_from) > 1:
+                    x = (node_from[0].pos.x + node_from[1].pos.x) / 2
+                    y = (node_from[0].pos.y + node_from[1].pos.y) / 2
+                    z = (node_from[0].pos.z + node_from[1].pos.z) / 2
+                    return_tu = (x, y, z)
+                    return return_tu
+        if len(node_to) > 0 and len(node_from) > 0:
+            x = (node_to[0].pos.x + node_from[0].pos.x) / 2
+            y = (node_to[0].pos.y + node_from[0].pos.y) / 2
+            z = (node_to[0].pos.z + node_from[0].pos.z) / 2
+            return_tu = (x, y, z)
+            return return_tu
+        if len(node_to) > 0:
+            x = (node_to[0].pos.x + np.random.uniform(min_x, max_x)) / 2
+            y = (node_to[0].pos.y + np.random.uniform(min_y, max_y)) / 2
+            z = node_to[0].pos.z
+            return_tu = (x, y, z)
+            return return_tu
+        if len(node_from) > 0:
+            x = (node_from[0].pos.x + np.random.uniform(min_x, max_x)) / 2
+            y = (node_from[0].pos.y + np.random.uniform(min_y, max_y)) / 2
+            z = node_from[0].pos.z
+            return_tu = (x, y, z)
+            return return_tu
+        else:
+            x = np.random.uniform(min_x, max_x) / 2
+            y = np.random.uniform(min_y, max_y) / 2
+            z = 0
+            return_tu = (x, y, z)
+            return return_tu
+
     def plot_graph(self) -> None:
         """
         Plots the graph.
@@ -223,4 +277,52 @@ class GraphAlgoInterface:
         Otherwise, they will be placed in a random but elegant manner.
         @return: None
         """
-        raise NotImplementedError
+        positions_plt = [[], [], []]
+        not_placed = 0
+        for node in self.get_graph().get_all_v().values():
+            if node.pos is not None:
+                positions_plt[0].append(node.pos.x)
+                positions_plt[1].append(node.pos.y)
+                positions_plt[2].append(node.pos.z)
+            else:
+                not_placed += 1
+        if not_placed == len(self.get_graph().get_all_v().values()):
+            min_x = 1
+            min_y = 1
+            max_x = 2
+            max_y = 2
+            for node in self.get_graph().get_all_v().values():
+                node.pos = GeoLocation(self.try_get_along(node, min_x, max_x, min_y, max_y))
+                positions_plt[0].append(node.pos.x)
+                positions_plt[1].append(node.pos.y)
+                positions_plt[2].append(node.pos.z)
+        if not_placed > 0:
+            if not_placed < 2:
+                max_x = max(positions_plt[0])
+                max_y = max(positions_plt[1])
+            else:
+                max_x = max(positions_plt[0]) + 1
+                max_y = max(positions_plt[1]) + 1
+            min_x = min(positions_plt[0])
+            min_y = min(positions_plt[1])
+            for node in self.get_graph().get_all_v().values():
+                if node.pos is None:
+                    node.pos = GeoLocation(self.try_get_along(node, min_x, max_x, min_y, max_y))
+                    positions_plt[0].append(node.pos.x)
+                    positions_plt[1].append(node.pos.y)
+                    positions_plt[2].append(node.pos.z)
+        margin_x = (min(positions_plt[0]) + max(positions_plt[0])) / 3
+        margin_y = (max(positions_plt[1]) + min(positions_plt[1])) / 3
+        min_x = min(positions_plt[0]) - math.fabs(margin_x)
+        min_y = min(positions_plt[1]) - math.fabs(margin_y)
+        max_x = max(positions_plt[0]) + math.fabs(margin_x)
+        max_y = max(positions_plt[1]) + math.fabs(margin_y)
+
+        plt.plot(positions_plt[0], positions_plt[1], "ro")
+        for node in self.get_graph().get_all_v().values():
+            for dest_node_id in self.get_graph().all_out_edges_of_node(node.key).keys():
+                dest_node = self.get_node(dest_node_id)
+                plt.arrow(node.pos.x, node.pos.y, (dest_node.pos.x - node.pos.x), (dest_node.pos.y - node.pos.y))
+        plt.axis([min_x, max_x, min_y, max_y])
+        plt.show()
+        # raise NotImplementedError
