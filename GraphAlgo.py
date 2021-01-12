@@ -3,17 +3,21 @@ import math
 from typing import List
 import json
 from GraphInterface import GraphInterface
+from GraphAlgoInterface import GraphAlgoInterface
 from DiGraph import DiGraph
 from components import *
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-class GraphAlgo:
+class GraphAlgo(GraphAlgoInterface):
     """This abstract class represents an interface of a graph."""
 
-    def __init__(self):
-        self.graph = DiGraph()
+    def __init__(self, dg: DiGraph = None):
+        if dg is None:
+            self.graph = DiGraph()
+        else:
+            self.graph = dg
 
     def get_graph(self) -> GraphInterface:
         """
@@ -34,7 +38,10 @@ class GraphAlgo:
 
             for node in s["Nodes"]:
                 if "pos" in node:
-                    self.graph.add_node(node_id=node["node_id"], pos=node["pos"])
+                    x, y, z = node["pos"].split(',')
+                    position = (x, y, z)
+                    # node_key = node["node_id"]
+                    self.get_graph().add_node(node_id=node["id"], pos=position)
                 else:
                     self.graph.add_node(node_id=node["node_id"])
             for edge in s["Edges"]:
@@ -120,19 +127,25 @@ class GraphAlgo:
 
         while len(heap_min) > 0:
             v = heapq.heappop(heap_min)[1]  # get the node with the smallest tag
-            for node_id in self.graph.all_out_edges_of_node(v).keys():  # from neighbors
-                if node_id not in visited:  # check if visited
-                    if node_id in self.graph.all_out_edges_of_node(v).keys():  # not search null
-                        alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[node_id]  # tag + edge weight
-                        if self.graph.get_all_v()[node_id].tag > alt_path:
-                            self.graph.graph_v[node_id].tag = alt_path
-                            prev_nodes[node_id] = v
-                            heapq.heappush(heap_min, (alt_path, node_id))  # add to heap the node id by tag
+            for node_neighbor in self.graph.all_out_edges_of_node(v).keys():  # from neighbors
+                if node_neighbor not in visited:  # check if visited
+                    if node_neighbor in self.graph.all_out_edges_of_node(v).keys():  # not search null
+
+                        visited.append(node_neighbor)
+                        alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[node_neighbor]  # tag + edge weight
+
+                        if self.graph.get_all_v()[node_neighbor].tag > alt_path:
+                            self.graph.get_node(node_id=node_neighbor).tag = alt_path
+                            prev_nodes[node_neighbor] = v
+                            heapq.heappush(heap_min, (alt_path, node_neighbor))  # add to heap the node id by tag
         node_key = id2
         li_return = []
         while self.graph.get_all_v()[node_key].tag > 0:
             li_return.append(node_key)
-            node_key = prev_nodes[node_key]
+            if node_key not in prev_nodes.keys():
+                return -1, {}
+            else:
+                node_key = prev_nodes[node_key]
         li_return.append(node_key)
         li_return.reverse()
         return self.graph.get_all_v()[id2].tag, li_return
@@ -150,8 +163,8 @@ class GraphAlgo:
         Notes:
         If the graph is None or id1 is not in the graph, the function should return an empty list []
         """
-        set_in = self.bfs_in(id1)
-        set_out = self.bfs_out(id1)
+        set_in = set(self.bfs_in(id1))
+        set_out = set(self.bfs_out(id1))
         return list(set_in & set_out)
         # raise NotImplementedError
 
@@ -222,7 +235,7 @@ class GraphAlgo:
     def get_node(self, node_id):
         return self.graph.get_all_v()[node_id]
 
-    def try_get_along(self, node: NodeData, min_x: int, max_x: int, min_y: int, max_y: int) -> tuple:
+    def try_get_along(self, node: NodeData, min_x: float, max_x: float, min_y: float, max_y: float) -> tuple:
         node_to = []
         if len(self.get_graph().all_out_edges_of_node(node.key)) > 0:
             for node_dest in self.get_graph().all_out_edges_of_node(node.key).keys():
@@ -286,7 +299,7 @@ class GraphAlgo:
                 positions_plt[2].append(node.pos.z)
             else:
                 not_placed += 1
-        if not_placed == len(self.get_graph().get_all_v().values()):
+        if not_placed == len(self.get_graph().get_all_v().keys()):
             min_x = 1
             min_y = 1
             max_x = 2
@@ -298,31 +311,64 @@ class GraphAlgo:
                 positions_plt[2].append(node.pos.z)
         if not_placed > 0:
             if not_placed < 2:
-                max_x = max(positions_plt[0])
-                max_y = max(positions_plt[1])
+                max_x = float(max(positions_plt[0]))
+                max_y = float(max(positions_plt[1]))
             else:
-                max_x = max(positions_plt[0]) + 1
-                max_y = max(positions_plt[1]) + 1
-            min_x = min(positions_plt[0])
-            min_y = min(positions_plt[1])
+                max_x = float(max(positions_plt[0])) + 1
+                max_y = float(max(positions_plt[1])) + 1
+            min_x = float(min(positions_plt[0]))
+            min_y = float(min(positions_plt[1]))
             for node in self.get_graph().get_all_v().values():
                 if node.pos is None:
                     node.pos = GeoLocation(self.try_get_along(node, min_x, max_x, min_y, max_y))
                     positions_plt[0].append(node.pos.x)
                     positions_plt[1].append(node.pos.y)
                     positions_plt[2].append(node.pos.z)
-        margin_x = (min(positions_plt[0]) + max(positions_plt[0])) / 3
-        margin_y = (max(positions_plt[1]) + min(positions_plt[1])) / 3
-        min_x = min(positions_plt[0]) - math.fabs(margin_x)
-        min_y = min(positions_plt[1]) - math.fabs(margin_y)
-        max_x = max(positions_plt[0]) + math.fabs(margin_x)
-        max_y = max(positions_plt[1]) + math.fabs(margin_y)
+        margin_x = (float(max(positions_plt[0])) - float(min(positions_plt[0]))) / 20
+        margin_y = (float(max(positions_plt[1])) - float(min(positions_plt[1]))) / 20
+        min_x = float(min(positions_plt[0])) - math.fabs(margin_x)
+        min_y = float(min(positions_plt[1])) - math.fabs(margin_y)
+        max_x = float(max(positions_plt[0])) + math.fabs(margin_x)
+        max_y = float(max(positions_plt[1])) + math.fabs(margin_y)
 
-        plt.plot(positions_plt[0], positions_plt[1], "ro")
         for node in self.get_graph().get_all_v().values():
+            plt.plot(float(node.pos.x), float(node.pos.y), 'bo', marker='o', markersize=3, data="d")
+            label = node.key
+            plt.annotate(label,  # this is the text
+                         (float(node.pos.x), float(node.pos.y)),  # this is the point to label
+                         textcoords="offset points",  # how to position the text
+                         xytext=(0.85, 0.95),
+                         fontsize=8,
+                         ha='center')
             for dest_node_id in self.get_graph().all_out_edges_of_node(node.key).keys():
                 dest_node = self.get_node(dest_node_id)
-                plt.arrow(node.pos.x, node.pos.y, (dest_node.pos.x - node.pos.x), (dest_node.pos.y - node.pos.y))
+                plt.arrow(float(node.pos.x), float(node.pos.y),
+                          (float(dest_node.pos.x) - float(node.pos.x)), (float(dest_node.pos.y) - float(node.pos.y)),
+                          length_includes_head=True, width=0.000003, head_width=0.0002)
         plt.axis([min_x, max_x, min_y, max_y])
+        plt.xlabel("axis X")
+        plt.ylabel("axis Y")
+        plt.title("wow")
         plt.show()
         # raise NotImplementedError
+
+
+if __name__ == '__main__':
+    def check0():
+        """
+        This function tests the naming (main methods of the DiGraph class, as defined in GraphInterface.
+        :return:
+        """
+
+
+    g = GraphAlgo()
+    # pos = (2,3,4)
+    # g.graph.add_node(node_id=1,pos=pos)
+    g.load_from_json("data/A5")
+    g.plot_graph()
+    a = 1
+    k = (1, 2, 3)
+    j = (2, 3, 4)
+    l = np.array([[1, 2, 3], [4, 5, 6]])
+    a = max(l[0])
+    a = 0
