@@ -16,6 +16,9 @@ class NodeData:
         else:
             self.pos = None
 
+    def __repr__(self):
+        return "#{}".format(self.key)
+
 
 class EdgeData:
 
@@ -31,3 +34,9 @@ class GeoLocation:
         self.x = pos[0]
         self.y = pos[1]
         self.z = pos[2]
+
+    def __repr__(self):
+        if self.pos is not None:
+            return "{},{},{}".format(self.x, self.y, self.z)
+        else:
+            return "None"

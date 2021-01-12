@@ -18,6 +18,22 @@ class DiGraph(GraphInterface):
         self.graph_edges_out = dict()  # dict of all the nodes connected from a node (int : {int : EdgeData})
         self.graph_edges_in = dict()  # dict of all the nodes connected to a node (int : {int : EdgeData})
 
+    def __repr__(self):
+        s = "|V|={} , |E|={} , MC={}\n".format(len(self.get_all_v().keys()), self.edge_size, self.mc_count)
+        for key in self.graph_v.keys():
+            s += "from {}:\n".format(self.graph_v[key])
+            s += "\t To: "
+            for w in self.all_out_edges_of_node(key).keys():
+                s += str(w)
+                s += " | "
+            s += "\n"
+            # s += "\t from:\t"
+            # for w in self.all_out_edges_of_node(key).keys():
+            #     s += str(w)
+            #     s += ", "
+            s += "\n"
+        return s
+
     def get_node(self, node_id):
         if node_id is not None:
             return self.get_all_v()[node_id]
