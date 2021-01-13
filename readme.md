@@ -11,6 +11,9 @@ known library.
 
 The A0 graph from assignment 2:<br>
 ![graph A0](https://github.com/avivdan/OOP_EX3/blob/master/pics/A0.png?raw=true)
+
+---
+
 ###would be represented:
 
 ```
@@ -54,6 +57,7 @@ from #10:
 
 #Comparison 
 ####java vs python vs networkx
+
 >networkx won...</br>
 because networkx got run time of zero on every graph we didn't place him on a bar chart,</br> 
 but we surly measure and load all the graphs for comparison.
