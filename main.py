@@ -5,6 +5,7 @@ import networkx as nx
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 
 def load_from_json(file_name: str) -> nx:
@@ -359,8 +360,27 @@ def build_bar_chart():
     plt.show()
 
 
+def create_random_graph(nodes: int, Edges: int = None):
+    g = DiGraph()
+    for i in range(1, nodes):
+        g.add_node(i)
+    if Edges is None:
+        for node_i in g.get_all_v().keys():
+            for node_j in g.get_all_v().keys():
+                if node_j != node_i:
+                    g.add_edge(node_i, node_j, 3)
+    else:
+        for i in range(1, Edges):
+            n1 = random.randint(1, nodes-1)
+            n2 = random.randint(1, nodes-1)
+            g.add_edge(n1, n2, 3)
+    g_algo = GraphAlgo(dg=g)
+    g_algo.plot_graph()
+
+
 if __name__ == '__main__':
     # check_runtime()
     # networkX()
-    build_bar_chart()
+    # build_bar_chart()
+    create_random_graph(nodes=10)
     print("wow")
