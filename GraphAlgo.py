@@ -165,6 +165,8 @@ class GraphAlgo(GraphAlgoInterface):
         Notes:
         If the graph is None or id1 is not in the graph, the function should return an empty list []
         """
+        if id1 not in self.graph.get_all_v().keys():
+            return []
         set_in = set(self.bfs_in(id1))
         set_out = set(self.bfs_out(id1))
         list1 = [id1]
