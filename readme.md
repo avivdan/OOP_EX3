@@ -9,7 +9,7 @@ for the differences between them by time, also, to show us our data structure ef
 known library.
 
 
-The A0 graph from assignment 2:<br>
+The A0 graph from assignment 2:</br>
 ![graph A0](https://github.com/avivdan/OOP_EX3/blob/master/pics/A0.png?raw=true)
 
 ---
