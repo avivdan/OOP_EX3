@@ -173,7 +173,7 @@ class DiGraph(GraphInterface):
         return True
         # raise NotImplementedError
 
-    def add_node(self, node_id: int, pos: tuple = None) -> bool:
+    def add_node(self, node_id: int = None, pos: tuple = None) -> bool:
         """
         Adds a node to the graph.
         @param node_id: The node ID
