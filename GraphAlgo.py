@@ -1,13 +1,16 @@
 import heapq
+import json
 import math
 from typing import List
-import json
-from GraphInterface import GraphInterface
-from GraphAlgoInterface import GraphAlgoInterface
-from DiGraph import DiGraph
-from components import *
+
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+
+from DiGraph import DiGraph
+from GraphAlgoInterface import GraphAlgoInterface
+from GraphInterface import GraphInterface
+from components import *
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -248,8 +251,10 @@ class GraphAlgo(GraphAlgoInterface):
                 if self.get_node(node_dest).pos is not None:
                     node_to.append(self.get_node(node_dest))
                 if len(node_to) > 1:
-                    x = (node_to[0].pos.x + node_to[1].pos.x) / 2
-                    y = (node_to[0].pos.y + node_to[1].pos.y) / 2
+                    x = (node_to[0].pos.x + node_to[1].pos.x +
+                         random.uniform(min_x, max_x) - random.uniform(min_x, max_x)) / 3
+                    y = (node_to[0].pos.y + node_to[1].pos.y +
+                         random.uniform(min_x, max_x) - random.uniform(min_x, max_x)) / 3
                     z = (node_to[0].pos.z + node_to[1].pos.z) / 2
                     return_tu = (x, y, z)
                     return return_tu
