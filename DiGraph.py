@@ -35,7 +35,7 @@ class DiGraph(GraphInterface):
         return s
 
     def get_node(self, node_id):
-        if node_id is not None:
+        if node_id is not None: #If exist
             return self.get_all_v()[node_id]
         else:
             return None
@@ -67,8 +67,8 @@ class DiGraph(GraphInterface):
         each node is represented using a pair (other_node_id, weight)
         """
         dic_return = {}
-        if id1 in self.graph_edges_in.keys():
-            for x in self.graph_edges_in[id1].keys():
+        if id1 in self.graph_edges_in.keys():  #If exist
+            for x in self.graph_edges_in[id1].keys(): #For node which is connected to id1
                 dic_return[x] = self.graph_edges_in[id1][x].weight
             return dic_return
         else:
@@ -79,8 +79,8 @@ class DiGraph(GraphInterface):
         (other_node_id, weight)
         """
         dic_return = {}
-        if id1 in self.graph_edges_out.keys():
-            for x in self.graph_edges_out[id1].keys():
+        if id1 in self.graph_edges_out.keys(): #If exist
+            for x in self.graph_edges_out[id1].keys(): #For node which id1 is connected to
                 dic_return[x] = self.graph_edges_out[id1][x].weight
             return dic_return
         else:
@@ -109,15 +109,15 @@ class DiGraph(GraphInterface):
         edge = EdgeData(id1, id2, weight)
         if edge.src in self.graph_edges_out.keys():
             if edge.dest in self.graph_edges_out[edge.src].keys():
-                return False
+                return False #If edge already exist return false
             else:
-                self.graph_edges_out[edge.src][edge.dest] = edge
+                self.graph_edges_out[edge.src][edge.dest] = edge #Add edge to out_edges
         else:
-            self.graph_edges_out[edge.src] = {edge.dest: edge}
+            self.graph_edges_out[edge.src] = {edge.dest: edge} #Add edge to out_edges
         if edge.dest in self.graph_edges_in.keys():
-            self.graph_edges_in[edge.dest][edge.src] = edge
+            self.graph_edges_in[edge.dest][edge.src] = edge #Add edge to in_edges
         else:
-            self.graph_edges_in[edge.dest] = {edge.src: edge}
+            self.graph_edges_in[edge.dest] = {edge.src: edge} #Add edge to in_edges
         self.edge_size += 1
         self.mc_count += 1
         return True
@@ -131,18 +131,18 @@ class DiGraph(GraphInterface):
         @return: True if the node was added successfully, False o.w.
         Note: if the node id already exists the node will not be added
         """
-        if node_id in self.graph_v.keys():
+        if node_id in self.graph_v.keys(): #If exist
             return False
         if node_id is not None:
-            if pos is not None:
-                self.graph_v[node_id] = NodeData(key=node_id, pos=pos)
+            if pos is not None: #If has position
+                self.graph_v[node_id] = NodeData(key=node_id, pos=pos) #Add node with the existing key and position
                 self.mc_count += 1
                 return True
-            self.graph_v[node_id] = NodeData(key=node_id)
+            self.graph_v[node_id] = NodeData(key=node_id) #Add node with the existing key
             self.mc_count += 1
             return True
         if pos is not None:
-            self.graph_v[node_id] = NodeData(pos=pos)
+            self.graph_v[node_id] = NodeData(pos=pos) #Add node with the existing position
             self.mc_count += 1
             return True
         self.graph_v[node_id] = NodeData()
@@ -157,13 +157,13 @@ class DiGraph(GraphInterface):
         @return: True if the node was removed successfully, False o.w.
         Note: if the node id does not exists the function will do nothing
         """
-        if node_id in self.graph_v.keys():
-            self.graph_v.pop(node_id)
+        if node_id in self.graph_v.keys(): #If exist
+            self.graph_v.pop(node_id) #Removes the node from graph_v
             self.mc_count += 1
             if node_id in self.graph_edges_out.keys():
-                dict_in = self.graph_edges_out.pop(node_id)  # dict_in = dict
+                dict_in = self.graph_edges_out.pop(node_id)  # dict_in = dict, removes all the removed node out_edges
                 for x in dict_in.keys():
-                    self.graph_edges_in[x].pop(node_id)
+                    self.graph_edges_in[x].pop(node_id) #Removes all the removed node in_edges
             return True
         return False
         # raise NotImplementedError
@@ -178,12 +178,10 @@ class DiGraph(GraphInterface):
         """
         if node_id1 in self.graph_edges_out.keys():
             if node_id2 in self.graph_edges_out[node_id1].keys():
-                self.graph_edges_out.get(node_id1).pop(node_id2)
-                self.graph_edges_in.get(node_id2).pop(node_id1)
-                self.edge_size -= 1
+                self.graph_edges_out.get(node_id1).pop(node_id2) #Removes from "one side"
+                self.graph_edges_in.get(node_id2).pop(node_id1) #Removes from "the other side"
+                self.edge_size -= 1 #Because an edge has been removed
                 self.mc_count += 1
                 return True
-        return False
+        return False #If not exist
         # raise NotImplementedError
-
-    # *+*+*+*+*+*+*+*+*+*++*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+
