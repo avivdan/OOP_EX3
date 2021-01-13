@@ -28,6 +28,10 @@ class EdgeData:
         self.weight = weight
         self.info = ""
 
+    def __repr__(self):
+        return ""
+        #  {} ->{} \n".format(self.src, self.dest)"
+
 
 class GeoLocation:
     def __init__(self, pos: tuple = (0, 0, 0)):

@@ -1,8 +1,10 @@
+import unittest
 from unittest import TestCase
 from DiGraph import DiGraph
 from GraphAlgo import GraphAlgo
-# from GraphAlgoInterface import GraphAlgoInterface
+from GraphAlgoInterface import GraphAlgoInterface
 from random import seed, randrange, random
+
 
 class MyTestCase(TestCase):
 
@@ -103,5 +105,3 @@ class MyTestCase(TestCase):
         graph.add_edge(5, 4, 2.5)
         answer = [[0, 1, 2, 3], [4, 5]]
         self.assertEqual(graph_algo.connected_components(), answer)
-
-
