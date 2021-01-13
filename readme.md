@@ -67,15 +67,15 @@ but we surly measure and load all the graphs for comparison.
 
 >**Shortest Path**
 
-![Shortest Path](https://github.com/avivdan/OOP_EX3/blob/master/pics/shortestPath.png.png?raw=true)
+![Shortest Path](https://github.com/avivdan/OOP_EX3/blob/master/pics/ST.png?raw=true)
 
 >**Strongly Connected Components**
 
-![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCCs.png?raw=true)
+![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCC.png?raw=true)
 
 >**Strongly Connected Component**
 
-![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCC_node.png?raw=true)
+![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCCsingal.png?raw=true)
 
 ---
 
