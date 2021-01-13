@@ -132,7 +132,8 @@ class GraphAlgo(GraphAlgoInterface):
                     if node_neighbor in self.graph.all_out_edges_of_node(v).keys():  # not search null
 
                         visited.append(node_neighbor)
-                        alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[node_neighbor]  # tag + edge weight
+                        alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[
+                            node_neighbor]  # tag + edge weight
 
                         if self.graph.get_all_v()[node_neighbor].tag > alt_path:
                             self.graph.get_node(node_id=node_neighbor).tag = alt_path
@@ -163,9 +164,13 @@ class GraphAlgo(GraphAlgoInterface):
         Notes:
         If the graph is None or id1 is not in the graph, the function should return an empty list []
         """
+        if id1 not in self.graph.get_all_v().keys():
+            return []
         set_in = set(self.bfs_in(id1))
         set_out = set(self.bfs_out(id1))
-        return list(set_in & set_out)
+        list1 = [id1]
+        list2 = list1 + list(set_in & set_out)
+        return list2
         # raise NotImplementedError
 
     def connected_components(self) -> List[list]:
@@ -372,3 +377,4 @@ if __name__ == '__main__':
     l = np.array([[1, 2, 3], [4, 5, 6]])
     a = max(l[0])
     a = 0
+
