@@ -58,19 +58,21 @@ from #10:
 #Comparison 
 ####java vs python vs networkx
 
+---
+
 >networkx won...</br>
 because networkx got run time of zero on every graph we didn't place him on a bar chart,</br> 
 but we surly measure and load all the graphs for comparison.
 
----
 
->####**Shortest Path**
+
+>**Shortest Path**
 ![Shortest Path](https://github.com/avivdan/OOP_EX3/blob/master/pics/shortestPath.png.png?raw=true)
 
->####**Strongly Connected Components**
+>**Strongly Connected Components**
 ![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCCs.png?raw=true)
 
->####**Strongly Connected Component**
+>**Strongly Connected Component**
 ![SCC](https://github.com/avivdan/OOP_EX3/blob/master/pics/SCC_node.png?raw=true)
 
 ---
