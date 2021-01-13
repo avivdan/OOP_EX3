@@ -97,56 +97,6 @@ class DiGraph(GraphInterface):
 
     # *****************************************************************
 
-    def try_get_along(self, node: NodeData, min_x: int, max_x: int, min_y: int, max_y: int) -> tuple:
-        node_to = []
-        if len(self.all_out_edges_of_node(node.key)) > 0:
-            for node_dest in self.all_out_edges_of_node(node.key).keys():
-                if self.get_node(node_dest).pos is not None:
-                    node_to.append(self.get_node(node_dest))
-                if len(node_to) > 1:
-                    x = (node_to[0].pos.x + node_to[1].pos.x) / 2
-                    y = (node_to[0].pos.y + node_to[1].pos.y) / 2
-                    z = (node_to[0].pos.z + node_to[1].pos.z) / 2
-                    return_tu = (x, y, z)
-                    return return_tu
-        node_from = []
-        if len(self.all_in_edges_of_node(node.key)) > 0:
-            for node_src in self.all_in_edges_of_node(node.key).keys():
-                if self.get_node(node_src).pos is not None:
-                    node_from.append(self.get_node(node_src))
-                if len(node_from) > 1:
-                    x = (node_from[0].pos.x + node_from[1].pos.x) / 2
-                    y = (node_from[0].pos.y + node_from[1].pos.y) / 2
-                    z = (node_from[0].pos.z + node_from[1].pos.z) / 2
-                    return_tu = (x, y, z)
-                    return return_tu
-        if len(node_to) > 0 and len(node_from) > 0:
-            x = (node_to[0].pos.x + node_from[0].pos.x) / 2
-            y = (node_to[0].pos.y + node_from[0].pos.y) / 2
-            z = (node_to[0].pos.z + node_from[0].pos.z) / 2
-            return_tu = (x, y, z)
-            return return_tu
-        if len(node_to) > 0:
-            x = (node_to[0].pos.x + np.random.uniform(min_x, max_x))/2
-            y = (node_to[0].pos.y + np.random.uniform(min_y, max_y))/2
-            z = node_to[0].pos.z
-            return_tu = (x, y, z)
-            return return_tu
-        if len(node_from) > 0:
-            x = (node_from[0].pos.x + np.random.uniform(min_x, max_x))/2
-            y = (node_from[0].pos.y + np.random.uniform(min_y, max_y))/2
-            z = node_from[0].pos.z
-            return_tu = (x, y, z)
-            return return_tu
-        else:
-            x = np.random.uniform(min_x, max_x) / 2
-            y = np.random.uniform(min_y, max_y) / 2
-            z = 0
-            return_tu = (x, y, z)
-            return return_tu
-
-    # ******************************************************************
-
     def add_edge(self, id1: int, id2: int, weight: float) -> bool:
         """
         Adds an edge to the graph.
@@ -173,7 +123,7 @@ class DiGraph(GraphInterface):
         return True
         # raise NotImplementedError
 
-    def add_node(self, node_id: int, pos: tuple = None) -> bool:
+    def add_node(self, node_id: int = None, pos: tuple = None) -> bool:
         """
         Adds a node to the graph.
         @param node_id: The node ID
@@ -235,4 +185,3 @@ class DiGraph(GraphInterface):
                 return True
         return False #If not exist
         # raise NotImplementedError
-
