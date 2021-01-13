@@ -357,35 +357,3 @@ class GraphAlgo(GraphAlgoInterface):
         plt.tick_params(axis='x', which='major', labelsize=6)
         plt.show()
         # raise NotImplementedError
-
-
-if __name__ == '__main__':
-    def check0():
-        """
-        This function tests the naming (main methods of the DiGraph class, as defined in GraphInterface.
-        :return:
-        """
-
-
-    g = GraphAlgo()
-    # # pos = (2,3,4)
-    # # g.graph.add_node(node_id=1,pos=pos)
-    # g.graph.add_node()
-    # g.graph.add_node()
-    # g.graph.add_node()
-    # g.graph.add_node()
-    # g.graph.add_node()
-
-    g.load_from_json("/home/aviv/PycharmProjects/OOP_EX3/data/A0.json")
-    print(g.graph.get_all_v())
-    print(g.graph.graph_edges_out)
-    print(g.graph.graph_edges_in)
-    print(g.graph)
-    g.plot_graph()
-
-    # a = 1
-    # k = (1, 2, 3)
-    # j = (2, 3, 4)
-    # l = np.array([[1, 2, 3], [4, 5, 6]])
-    # a = max(l[0])
-    # a = 0
