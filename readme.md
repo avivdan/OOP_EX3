@@ -9,12 +9,12 @@ for the differences between them by time, also, to show us our data structure ef
 known library.
 
 
-The A0 graph from assignment 2:<br>
+The A0 graph from assignment 2:</br>
 ![graph A0](https://github.com/avivdan/OOP_EX3/blob/master/pics/A0.png?raw=true)
 
 ---
 
-###would be represented:
+<h3>would be represented:</h3>
 
 ```
       |V|=11 , |E|=22 , MC=33
@@ -55,11 +55,9 @@ from #10:
 
 ---
 
-#Comparison 
+<h2>comparison</h2>
+<h3>java vs python vs networkx</h3>
 
-####java vs python vs networkx
-
----
 
 >networkx won...</br>
 because networkx got run time of zero on every graph we didn't place him on a bar chart,</br> 
