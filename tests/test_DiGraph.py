@@ -13,6 +13,7 @@ class TestDiGraph(TestCase):
         self.graph.add_node(3)
         self.graph.add_node(2) #Adding an existing node
         self.assertEqual(self.graph.v_size(), 2)
+        self.assertFalse(self.graph.add_node(3))
 
     def test_add_edge(self):
         self.graph.add_node(2)
@@ -23,6 +24,7 @@ class TestDiGraph(TestCase):
         self.assertEqual(self.graph.e_size(), 1)
         self.graph.add_edge(3,6,2.0)
         self.assertEqual(self.graph.e_size(), 2)
+        self.assertFalse(self.graph.add_edge(3, 6, 2.0))
 
     def test_remove_node(self):
         self.graph.add_node(1)
@@ -31,18 +33,20 @@ class TestDiGraph(TestCase):
         self.assertEqual(self.graph.v_size(), 0)
         self.graph.add_node(3)
         self.graph.remove_node(4) #Removes a not existing node
+        self.assertFalse(self.graph.remove_node(4))
         self.assertEqual(self.graph.v_size(), 1)
 
     def test_remove_edge(self):
         self.graph.add_node(0)
         self.graph.add_node(1)
-        self.graph.add_edge(0,1,9)
+        self.graph.add_edge(0, 1, 9)
         self.assertEqual(self.graph.e_size(), 1)
         self.graph.remove_edge(0, 1)
         self.assertEqual(self.graph.e_size(), 0)
-        self.graph.add_edge(1,0,3.5)
+        self.graph.add_edge(1, 0, 3.5)
         self.assertEqual(self.graph.e_size(), 1)
-        self.graph.remove_edge(2,3) #Removes a not existing edge
+        self.graph.remove_edge(2, 3) #Removes a not existing edge
+        self.assertFalse(self.graph.remove_edge(2, 3))
         self.assertEqual(self.graph.e_size(), 1)
 
     def test_get_node(self):
