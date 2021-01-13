@@ -98,7 +98,7 @@ but we surly measure and load all the graphs for comparison.
 | :------ |:-------------| :---------:|
 |[load_from_json(file_name)](https://www.json.org/json-en.html)|Loads a graph from a json file.|O(V+E)|
 |[save_to_json(file_name)](https://www.json.org/json-en.html)|Saves the graph in JSON format to a file|O(V+E)|
-|[shortest_path(src, dst)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)|Returns the shortest path from node src to node dst using Dijkstra's Algorithm|O(V+E)|
+|[shortest_path(src, dst)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)|Returns the shortest path from node src to node dst using Dijkstra's Algorithm|O((V+E)*LOG(V))|
 |[connected_component(key)](https://en.wikipedia.org/wiki/Strongly_connected_component)|Finds the Strongly Connected Component(SCC) that node id1 is a part of.|O(V+E)|
 |[connected_components()](https://www.geeksforgeeks.org/strongly-connected-components/)|Finds all the Strongly Connected Component(SCC) in the graph.|O(V*(V+E))|
 |[plot_graph()](https://matplotlib.org/)|Plots the graph. If the nodes have a position, the nodes will be placed there. Otherwise, they go to getAlong|O(V+E)|
