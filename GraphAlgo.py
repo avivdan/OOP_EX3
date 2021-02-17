@@ -47,6 +47,8 @@ class GraphAlgo(GraphAlgoInterface):
                     self.get_graph().add_node(node_id=node["id"], pos=position)  # Add node by the exist id and position
                 else:
                     self.graph.add_node(node_id=node["id"])  # Add node by the exist id
+
+                    
             for edge in s["Edges"]:
                 self.graph.add_edge(edge["src"], edge["dest"], edge["w"])  # Add edge
             return True
@@ -71,6 +73,7 @@ class GraphAlgo(GraphAlgoInterface):
                         d["Nodes"].append({"id": node.key})
                     else:
                         d["Nodes"].append({"id": node.key,  # Write with position
+
                                            "pos": (
                                                node.pos.x,
                                                node.pos.y,
