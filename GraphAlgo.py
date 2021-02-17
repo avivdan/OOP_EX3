@@ -41,14 +41,14 @@ class GraphAlgo(GraphAlgoInterface):
 
             for node in s["Nodes"]:
                 if "pos" in node:
-                    x, y, z = node["pos"].split(',')
+                    x, y, z = node["pos"].split(',')  # Seperate by ','
                     position = (x, y, z)
                     # node_key = node["node_id"]
-                    self.get_graph().add_node(node_id=node["id"], pos=position)
+                    self.get_graph().add_node(node_id=node["id"], pos=position)  # Add node by the exist id and position
                 else:
-                    self.graph.add_node(node_id=node["node_id"])
+                    self.graph.add_node(node_id=node["id"])  # Add node by the exist id
             for edge in s["Edges"]:
-                self.graph.add_edge(edge["src"], edge["dest"], edge["w"])
+                self.graph.add_edge(edge["src"], edge["dest"], edge["w"])  # Add edge
             return True
         except Exception as e:
             print(e)
@@ -63,14 +63,14 @@ class GraphAlgo(GraphAlgoInterface):
         @param file_name: The path to the out file
         @return: True if the save was successful, False o.w.
         """
-        with open(file_name, 'w') as file:
+        with open(file_name, 'w') as file:  # Write to file
             try:
                 d = {"Nodes": [], "Edges": []}
                 for node in self.graph.get_all_v().values():
                     if node.pos is None:
-                        d["Nodes"].append({"node_id": node.key})
+                        d["Nodes"].append({"id": node.key})
                     else:
-                        d["Nodes"].append({"node_id": node.key,
+                        d["Nodes"].append({"id": node.key,  # Write with position
                                            "pos": (
                                                node.pos.x,
                                                node.pos.y,
@@ -79,9 +79,9 @@ class GraphAlgo(GraphAlgoInterface):
                                            })
                 for src in self.graph.graph_edges_out.keys():
                     for dest, weight in self.graph.all_out_edges_of_node(src).items():
-                        d["Edges"].append({"src": src, "w": weight, "dest": dest})
+                        d["Edges"].append({"src": src, "w": weight, "dest": dest})  # Write the edge
 
-                json.dump(d, file)
+                json.dump(d, file)  # Stores d into file
                 return True
             except Exception as e:
                 print(e)
@@ -119,15 +119,15 @@ class GraphAlgo(GraphAlgoInterface):
         """
 
         nodes = self.graph.get_all_v()
-        if id1 not in nodes or id2 not in nodes:
+        if id1 not in nodes or id2 not in nodes:  # If not exist
             return None
-        visited = []
-        heap_min = []
+        visited = []  # Visited nodes list
+        heap_min = []  # Min binomial heap
         prev_nodes = dict()
         for x in self.graph.graph_v.keys():
             nodes[x].tag = math.inf
         nodes[id1].tag = 0
-        heapq.heappush(heap_min, (nodes[id1].tag, id1))
+        heapq.heappush(heap_min, (nodes[id1].tag, id1)) # Push to heap
 
         while len(heap_min) > 0:
             v = heapq.heappop(heap_min)[1]  # get the node with the smallest tag
@@ -135,7 +135,7 @@ class GraphAlgo(GraphAlgoInterface):
                 if node_neighbor not in visited:  # check if visited
                     # if node_neighbor in self.graph.all_out_edges_of_node(v).keys():  # not search null
 
-                    visited.append(node_neighbor)
+                    # visited.append(node_neighbor)
                     alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[
                         node_neighbor]  # tag + edge weight
 
@@ -143,8 +143,9 @@ class GraphAlgo(GraphAlgoInterface):
                         self.graph.get_node(node_id=node_neighbor).tag = alt_path
                         prev_nodes[node_neighbor] = v
                         heapq.heappush(heap_min, (alt_path, node_neighbor))  # add to heap the node id by tag
+            visited.append(v)
         node_key = id2
-        li_return = []
+        li_return = []  # The path
         while self.graph.get_all_v()[node_key].tag > 0:
             li_return.append(node_key)
             if node_key not in prev_nodes.keys():
@@ -168,10 +169,12 @@ class GraphAlgo(GraphAlgoInterface):
         Notes:
         If the graph is None or id1 is not in the graph, the function should return an empty list []
         """
-        set_in = set(self.bfs_in(id1))
-        set_out = set(self.bfs_out(id1))
+        if id1 not in self.graph.get_all_v().keys():
+            return []
+        set_in = set(self.bfs_in(id1))  # Set of the connected nodes to id1 and backwards
+        set_out = set(self.bfs_out(id1))  # Set of the connected nodes from id1 and onwards
         list1 = [id1]
-        list2 = list1 + list(set_in & set_out)
+        list2 = list1 + list(set_in & set_out)  # Put also id1 in the list
         return list2
         # raise NotImplementedError
 
@@ -183,7 +186,7 @@ class GraphAlgo(GraphAlgoInterface):
         Notes:
         If the graph is None the function should return an empty list []
         """
-        visited = []
+        visited = [] # Visited nodes list
         list_return = []
         for node in self.graph.get_all_v().keys():
             if node not in visited:
@@ -194,24 +197,24 @@ class GraphAlgo(GraphAlgoInterface):
         # raise NotImplementedError
 
     def bfs_out(self, node_id: int) -> List:
-        visited = {}
+        visited = {}  # Visited nodes dict
         for node in self.graph.get_all_v().keys():
             visited[node] = False
         queue = []
         visited[node_id] = True
-        queue.append(node_id)
+        queue.append(node_id)  # Assert to the queue
 
         while queue:
             s = queue.pop(0)
             for i in self.graph.all_out_edges_of_node(s).keys():
                 if not visited[i]:
-                    queue.append(i)
+                    queue.append(i)  # Assert to the queue
                     visited[i] = True
 
         list_return = []
         for node in visited:
             if visited[node]:
-                list_return.append(node)
+                list_return.append(node)  # Assert to the list
         list_return.remove(node_id)
         return list_return
 
@@ -242,6 +245,8 @@ class GraphAlgo(GraphAlgoInterface):
     def get_node(self, node_id):
         return self.graph.get_all_v()[node_id]
 
+    # This function try to place the non positioned nodes and place them on the graph in elegant way,
+    # but with a little random placing which don't come out from the graph margins
     def try_get_along(self, node: NodeData, min_x: float, max_x: float, min_y: float, max_y: float) -> tuple:
         node_to = []
         if len(self.get_graph().all_out_edges_of_node(node.key)) > 0:
@@ -292,7 +297,7 @@ class GraphAlgo(GraphAlgoInterface):
             return_tu = (x, y, z)
             return return_tu
 
-    # array is string values instead float
+
     def plot_graph(self):
         """
         Plots the graph.
