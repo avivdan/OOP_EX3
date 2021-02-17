@@ -46,7 +46,9 @@ class GraphAlgo(GraphAlgoInterface):
                     # node_key = node["node_id"]
                     self.get_graph().add_node(node_id=node["id"], pos=position)  # Add node by the exist id and position
                 else:
-                    self.graph.add_node(node_id=node["node_id"])  # Add node by the exist id
+                    self.graph.add_node(node_id=node["id"])  # Add node by the exist id
+
+                    
             for edge in s["Edges"]:
                 self.graph.add_edge(edge["src"], edge["dest"], edge["w"])  # Add edge
             return True
@@ -68,9 +70,10 @@ class GraphAlgo(GraphAlgoInterface):
                 d = {"Nodes": [], "Edges": []}
                 for node in self.graph.get_all_v().values():
                     if node.pos is None:
-                        d["Nodes"].append({"node_id": node.key})
+                        d["Nodes"].append({"id": node.key})
                     else:
-                        d["Nodes"].append({"node_id": node.key,  # Write with position
+                        d["Nodes"].append({"id": node.key,  # Write with position
+
                                            "pos": (
                                                node.pos.x,
                                                node.pos.y,
@@ -135,7 +138,7 @@ class GraphAlgo(GraphAlgoInterface):
                 if node_neighbor not in visited:  # check if visited
                     # if node_neighbor in self.graph.all_out_edges_of_node(v).keys():  # not search null
 
-                    visited.append(node_neighbor)
+                    # visited.append(node_neighbor)
                     alt_path = nodes[v].tag + self.graph.all_out_edges_of_node(v)[
                         node_neighbor]  # tag + edge weight
 
@@ -143,6 +146,7 @@ class GraphAlgo(GraphAlgoInterface):
                         self.graph.get_node(node_id=node_neighbor).tag = alt_path
                         prev_nodes[node_neighbor] = v
                         heapq.heappush(heap_min, (alt_path, node_neighbor))  # add to heap the node id by tag
+            visited.append(v)
         node_key = id2
         li_return = []  # The path
         while self.graph.get_all_v()[node_key].tag > 0:
